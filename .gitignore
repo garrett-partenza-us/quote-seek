@@ -1,0 +1,4 @@
+model/fine_tuned*
+model/word2vec*
+model/env
+**/__pycache__
