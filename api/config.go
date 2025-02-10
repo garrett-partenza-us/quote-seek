@@ -6,7 +6,7 @@ import (
 )
 
 type Config struct {
-	DatasetPath string
+	MeditationsCSVPath string
 }
 
 func GetConfig() Config {
