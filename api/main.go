@@ -43,6 +43,8 @@ func Search(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	config := GetConfig()
+	normalizer := NewNormalizer()
+	fmt.Println(normalizer.Normalize("Build your house on the rocks, and it will be strong."))
 	meditations, err := NewMeditations(config.MeditationsCSVPath)
 	_ = meditations
 	if err != nil {
