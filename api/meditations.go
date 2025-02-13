@@ -12,7 +12,7 @@ import (
 
 type Entry struct {
 	Text   string
-	Vector []float64
+	Vector []float32
 }
 
 type Meditations struct {
@@ -55,14 +55,14 @@ func NewMeditations(path string) (*Meditations, error) {
 		vectorStr := strings.Trim(record[2], "[]")
 		vectorParts := strings.Fields(vectorStr)
 
-		// Convert vector parts to float64
-		var vector []float64
+		// Convert vector parts to float32
+		var vector []float32
 		for _, part := range vectorParts {
-			val, err := strconv.ParseFloat(part, 64)
+			val, err := strconv.ParseFloat(part, 32)
 			if err != nil {
 				return nil, fmt.Errorf("error parsing vector value: %v", err)
 			}
-			vector = append(vector, val)
+			vector = append(vector, float32(val))
 		}
 
 		entries = append(entries, Entry{
@@ -77,10 +77,10 @@ func NewMeditations(path string) (*Meditations, error) {
 	}, nil
 }
 
-func (m *Meditations) Search (query []float64) []string {
+func (m *Meditations) Search (query []float32) []string {
 
 	// Compute distances
-	var distances []float64
+	var distances []float32
 	for i := range m.Entries {
 		distance := ComputeSSD(query, m.Entries[i].Vector)
 		distances = append(distances, distance)
@@ -104,8 +104,8 @@ func (m *Meditations) Search (query []float64) []string {
 
 }
 
-func ComputeSSD(query []float64, vector []float64) float64 {
-	var sum float64
+func ComputeSSD(query []float32, vector []float32) float32 {
+	var sum float32
 	for i := range query{
 		diff := query[i] - vector[i]
 		sum += diff * diff

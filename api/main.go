@@ -44,9 +44,15 @@ func Search(w http.ResponseWriter, r *http.Request) {
 func main() {
 	config := GetConfig()
 	normalizer := NewNormalizer()
-	fmt.Println(normalizer.Normalize("Build your house on the rocks, and it will be strong."))
+	tokens := normalizer.Normalize("universe plants stars sky")
+	vectorizer := NewVectorizer("../model/word2vec_model")
+	vector := vectorizer.Vectorize(tokens)
+	fmt.Println(vector)
 	meditations, err := NewMeditations(config.MeditationsCSVPath)
-	_ = meditations
+	result := meditations.Search(vector)
+	for _, res := range result {
+		fmt.Println(res)
+	}
 	if err != nil {
 		log.Fatal(err)
 	}
