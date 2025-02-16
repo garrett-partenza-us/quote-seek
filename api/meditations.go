@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/csv"
 	"fmt"
+	"math"
 	"io"
 	"os"
 	"strconv"
@@ -12,7 +13,7 @@ import (
 
 type Entry struct {
 	Text   string
-	Vector []float32
+	Vector []float64
 }
 
 type Meditations struct {
@@ -55,14 +56,14 @@ func NewMeditations(path string) (*Meditations, error) {
 		vectorStr := strings.Trim(record[2], "[]")
 		vectorParts := strings.Fields(vectorStr)
 
-		// Convert vector parts to float32
-		var vector []float32
+		// Convert vector parts to float64
+		var vector []float64
 		for _, part := range vectorParts {
-			val, err := strconv.ParseFloat(part, 32)
+			val, err := strconv.ParseFloat(part, 64)
 			if err != nil {
 				return nil, fmt.Errorf("error parsing vector value: %v", err)
 			}
-			vector = append(vector, float32(val))
+			vector = append(vector, float64(val))
 		}
 
 		entries = append(entries, Entry{
@@ -77,12 +78,12 @@ func NewMeditations(path string) (*Meditations, error) {
 	}, nil
 }
 
-func (m *Meditations) Search (query []float32) []string {
+func (m *Meditations) Search (query []float64) []string {
 
 	// Compute distances
-	var distances []float32
+	var distances []float64
 	for i := range m.Entries {
-		distance := ComputeSSD(query, m.Entries[i].Vector)
+		distance := cosineSimilarity(query, m.Entries[i].Vector)
 		distances = append(distances, distance)
 	}
 	// Retrieve indices of shortest distances
@@ -91,7 +92,7 @@ func (m *Meditations) Search (query []float32) []string {
 		indices[i] = i
 	}
 	sort.Slice(indices, func(i, j int) bool {
-		return distances[indices[i]] < distances[indices[j]]
+		return distances[indices[i]] > distances[indices[j]]
 	})
 
 	// Retrieve texts from results
@@ -104,11 +105,32 @@ func (m *Meditations) Search (query []float32) []string {
 
 }
 
-func ComputeSSD(query []float32, vector []float32) float32 {
-	var sum float32
-	for i := range query{
-		diff := query[i] - vector[i]
-		sum += diff * diff
+// Function to compute the dot product of two vectors
+func dotProduct(a, b []float64) float64 {
+	var result float64
+	for i := 0; i < len(a); i++ {
+		result += a[i] * b[i]
 	}
-	return sum
+	return result
+}
+
+// Function to compute the magnitude (Euclidean norm) of a vector
+func magnitude(a []float64) float64 {
+	var sum float64
+	for _, value := range a {
+		sum += value * value
+	}
+	return float64(math.Sqrt(float64(sum)))
+}
+
+// Function to compute the cosine similarity
+func cosineSimilarity(a, b []float64) float64 {
+	// Calculate the dot product of vectors a and b
+	dot := dotProduct(a, b)
+	// Calculate the magnitudes of vectors a and b
+	magnitudeA := magnitude(a)
+	magnitudeB := magnitude(b)
+
+	// Return the cosine similarity
+	return dot / (magnitudeA * magnitudeB)
 }

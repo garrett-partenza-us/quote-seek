@@ -13,8 +13,8 @@ type Normalizer struct {
 	Stopwords []string
 }
 
-func NewNormalizer() Normalizer {
-	stopwords := LoadStopwords("./stopwords-en.txt")
+func NewNormalizer(stopwordsPath string) Normalizer {
+	stopwords := LoadStopwords(stopwordsPath)
 	return Normalizer{
 		Stopwords: stopwords,
 	}

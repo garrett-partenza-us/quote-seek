@@ -7,6 +7,12 @@ import (
 
 type Config struct {
 	MeditationsCSVPath string
+	StopwordsPath string
+	VocabPath string
+	VectorsPath string
+	NgramsPath string
+	SystemPrompt string
+	Preface string
 }
 
 func GetConfig() Config {
