@@ -60,19 +60,34 @@ func (h SearchHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	userPrompt := GeneratePrompt(data.Query, searchResults, h.Config.Preface)
 
 	// Prepare the JSON payload to send to the Ollama API
-	payload := map[string]interface{}{
-		"model": "llama3:instruct",
-		"messages": []map[string]interface{}{
-			{
-				"role":    "system",
-				"content": h.Config.SystemPrompt,
+		payload := map[string]interface{}{
+			"model": "llama3:instruct",
+			"messages": []map[string]interface{}{
+					{
+							"role":    "system",
+							"content": h.Config.SystemPrompt,
+					},
+					{
+							"role":    "user",
+							"content": userPrompt,
+					},
 			},
-			{
-				"role":    "user",
-				"content": userPrompt,
+			"stream": false,
+			"format": map[string]interface{}{ // Explicitly define as map[string]interface{}
+					"type": "object",
+					"properties": map[string]interface{}{
+							"quote": map[string]interface{}{
+									"type": "string",
+							},
+							"interpretation": map[string]interface{}{
+									"type": "string",
+							},
+							"advice": map[string]interface{}{
+									"type": "string",
+							},
+					},
+					"required": []string{"quote", "interpretation", "advice"},
 			},
-		},
-		"stream": false,
 	}
 
 	ollamaURL := "http://localhost:11434/api/chat"

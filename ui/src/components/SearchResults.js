@@ -1,14 +1,27 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import './SearchResults.css';
 
 const SearchResults = ({ result, loading, error, hasSearched }) => {
-  // Keep the quote section open by default
+  // Set quote to be open by default
   const [openSections, setOpenSections] = useState({
     quote: true,
     interpretation: false,
     advice: false
   });
+  
+  // State for fade-in animation
+  const [visible, setVisible] = useState(false);
+  
+  // Trigger fade-in when component mounts with results
+  useEffect(() => {
+    if (result && hasSearched) {
+      const timer = setTimeout(() => {
+        setVisible(true);
+      }, 50); // Small delay to ensure DOM is ready
+      return () => clearTimeout(timer);
+    }
+  }, [result, hasSearched]);
 
   const toggleSection = (section) => {
     setOpenSections(prev => ({
@@ -37,7 +50,7 @@ const SearchResults = ({ result, loading, error, hasSearched }) => {
 
   return (
     <div className="results-wrapper">
-      <div className="search-results-container">
+      <div className={`search-results-container ${visible ? 'visible' : 'hidden'}`}>
         {/* Quote section */}
         <div className="accordion-item">
           <div 
@@ -47,11 +60,11 @@ const SearchResults = ({ result, loading, error, hasSearched }) => {
             <h3>Quote</h3>
             {openSections.quote ? <ChevronUp /> : <ChevronDown />}
           </div>
-          {openSections.quote && (
+          <div className={`accordion-content-wrapper ${openSections.quote ? 'open' : 'closed'}`}>
             <div className="accordion-content">
               <p>{quote}</p>
             </div>
-          )}
+          </div>
         </div>
 
         {/* Interpretation section */}
@@ -63,11 +76,11 @@ const SearchResults = ({ result, loading, error, hasSearched }) => {
             <h3>Interpretation</h3>
             {openSections.interpretation ? <ChevronUp /> : <ChevronDown />}
           </div>
-          {openSections.interpretation && (
+          <div className={`accordion-content-wrapper ${openSections.interpretation ? 'open' : 'closed'}`}>
             <div className="accordion-content">
               <p>{interpretation}</p>
             </div>
-          )}
+          </div>
         </div>
 
         {/* Advice section */}
@@ -79,11 +92,11 @@ const SearchResults = ({ result, loading, error, hasSearched }) => {
             <h3>Advice</h3>
             {openSections.advice ? <ChevronUp /> : <ChevronDown />}
           </div>
-          {openSections.advice && (
+          <div className={`accordion-content-wrapper ${openSections.advice ? 'open' : 'closed'}`}>
             <div className="accordion-content">
               <p>{advice}</p>
             </div>
-          )}
+          </div>
         </div>
       </div>
     </div>

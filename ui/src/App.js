@@ -38,7 +38,9 @@ const App = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ query })
+        body: JSON.stringify({
+					query
+				})
       });
 
       if (!response.ok) {
