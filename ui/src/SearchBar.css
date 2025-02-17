@@ -1,0 +1,36 @@
+.search-bar-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 800px; /* Ensure the container takes up the full width */
+}
+
+.search-bar {
+  background-color: transparent;
+  border: 1px solid #FFFFF4;  /* White outline */
+  color: #FFFFF2;  /* White text */
+  font-size: 1rem;  /* Larger font size */
+  padding: 15px 20px;
+  width: 80%;  /* Increase to 80% of container width */
+  max-width: 1200px;  /* Optional: add max-width for responsiveness */
+  border-radius: 25px;  /* Rounded corners */
+  outline: none;
+  transition: all 0.3s ease;
+  font-family: 'Roboto', sans-serif;
+}
+
+.search-bar::placeholder {
+  color: #888888;  /* Grey placeholder text */
+}
+
+.search-bar:focus {
+  border-color: #406F80; /* Soft Purple border */
+  background-color: rgba(64,111,128, 0.1); /* Light purple background */
+}
+
+/* Text entered by the user */
+.search-bar:not(:placeholder-shown) {
+  color: #FFFFF2;  /* White text once user starts typing */
+}
+

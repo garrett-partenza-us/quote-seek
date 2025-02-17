@@ -1,0 +1,33 @@
+/* src/App.css */
+.App {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+}
+
+.App-content {
+  z-index: 3;  /* Ensure content appears above particles */
+  text-align: center;
+}
+
+.App-link {
+  color: #61dafb;
+  font-size: 1.5rem;
+  text-decoration: none;
+}
+
+.App-header {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+* {
+  font-family: 'Roboto', sans-serif;  /* Apply Roboto font globally */
+}
+
