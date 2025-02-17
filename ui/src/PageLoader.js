@@ -9,12 +9,20 @@ const PageLoader = ({ isLoading }) => {
   const [fadeOut, setFadeOut] = useState(false);
 
   useEffect(() => {
+    let timeoutId;
+    
     if (!isLoading) {
-      setFadeOut(true);  // Start fade-out effect when isLoading becomes false
-      setTimeout(() => {
-        setFadeOut(false); // Reset fade-out state after animation
-      }, 1000); // Allow 1 second for the fade-out effect
+      // Start the fade-out process after 2 seconds
+      timeoutId = setTimeout(() => {
+        setFadeOut(true);  // Start fading out after 2 seconds
+      }, 2000);  // Delay for 2 seconds before triggering fade-out
+
+      // Clear the timeout if the component is unmounted or if isLoading changes
+      return () => clearTimeout(timeoutId);
     }
+
+    // Reset fade-out if isLoading is true
+    setFadeOut(false);
   }, [isLoading]);
 
   return (
@@ -29,3 +37,4 @@ const PageLoader = ({ isLoading }) => {
 };
 
 export default PageLoader;
+

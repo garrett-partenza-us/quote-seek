@@ -1,0 +1,26 @@
+/* General reset and body styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.header {
+	font-size: 1.5rem;
+  margin-bottom: 10px;
+  letter-spacing: 1px;
+	color: #FFFFF4;
+}
+
+.header-content {
+}
+
+.title {
+}
+
+.slogan {
+	font-size: 1rem;
+  letter-spacing: 1px;
+	color: #FFFFF4;
+	opacity: 0.6
+}
