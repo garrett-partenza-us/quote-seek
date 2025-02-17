@@ -1,9 +1,7 @@
 import React from 'react';
 import './SearchResults.css';
 
-const SearchResults = ({ quote, loading, error }) => {
-
-	console.log(quote, loading, error)
+const SearchResults = ({ result, loading, error }) => {
   if (loading) {
     return <div className="search-results-container loading">Searching...</div>;
   }
@@ -12,15 +10,20 @@ const SearchResults = ({ quote, loading, error }) => {
     return <div className="search-results-container error">{error}</div>;
   }
 
-  if (!quote) {
-    return null; // Don't show anything if there's no quote
+  if (!result) {
+    return null;
   }
+
+  const { quote, interpretation, advice } = result; // Destructure the response object
 
   return (
     <div className="search-results-container">
-        <p className="search-results-text">"{quote}"</p>
+      {quote && <p className="search-results-text section-1">{quote}</p>}
+      {interpretation && <p className="search-results-text section-2">{interpretation}</p>}
+      {advice && <p className="search-results-text section-3">{advice}</p>}
     </div>
   );
 };
 
 export default SearchResults;
+

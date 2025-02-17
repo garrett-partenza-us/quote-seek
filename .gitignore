@@ -3,3 +3,4 @@ model/word2vec*
 model/env
 **/__pycache__
 api/fasttext/*
+ui/node_modules

@@ -1,4 +1,3 @@
-// App.js
 import { useState, useEffect } from "react";
 import PageLoader from './components/PageLoader';
 import './App.css';
@@ -9,18 +8,14 @@ import Header from './components/Header';
 import ParticleBackground from './components/ParticleBackground';
 
 const App = () => {
-  // State for loading
   const [loading, setLoading] = useState(true);
   const [fadeIn, setFadeIn] = useState(false);
-  
-  // State for search
-  const [searchResult, setSearchResult] = useState('');
+  const [searchResult, setSearchResult] = useState(null); // Store structured response
   const [searchLoading, setSearchLoading] = useState(false);
   const [searchError, setSearchError] = useState(null);
   const [hasSearched, setHasSearched] = useState(false);
 
   useEffect(() => {
-    // Simulate loading completion after 3 seconds
     const timer = setTimeout(() => {
       setLoading(false);
       setFadeIn(true);
@@ -33,13 +28,11 @@ const App = () => {
     setSearchLoading(true);
     setSearchError(null);
     setHasSearched(true);
-    
+
     try {
-      // Using the current hostname with port 8080 and JSON payload format you specified
       const apiUrl = `${window.location.protocol}//${window.location.hostname}:8080/search`;
-      
       console.log('Sending search request:', query);
-      
+
       const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
@@ -47,25 +40,37 @@ const App = () => {
         },
         body: JSON.stringify({ query })
       });
-      
+
       if (!response.ok) {
         throw new Error(`Search failed: ${response.statusText}`);
       }
-      
+
+      // Get the response as JSON
       const data = await response.json();
-      console.log('Received search result:', data);
-      
-      // Make sure we're handling the response correctly
-      if (data && typeof data.response === 'string') {
-        setSearchResult(data.response);
+
+      // Check if the response contains the 'response' key with a stringified JSON
+      if (data && data.response) {
+				console.log(data.response)
+        // Parse the 'response' field, which contains the JSON string
+        const parsedResponse = JSON.parse(data.response);
+
+        console.log('Parsed search result:', parsedResponse);
+
+        // Set the parsed result to state
+        if (parsedResponse.quote && parsedResponse.interpretation && parsedResponse.advice) {
+          setSearchResult(parsedResponse); // Set the parsed result object
+        } else {
+          console.warn('Unexpected response format:', parsedResponse);
+          setSearchResult(null);
+        }
       } else {
-        console.warn('Unexpected response format:', data);
-        setSearchResult(JSON.stringify(data));
+        console.warn('Response does not contain the expected "response" key');
+        setSearchResult(null);
       }
     } catch (error) {
       console.error("Search error:", error);
       setSearchError(`An error occurred while searching: ${error.message}`);
-      setSearchResult('');
+      setSearchResult(null);
     } finally {
       setSearchLoading(false);
     }
@@ -73,22 +78,16 @@ const App = () => {
 
   return (
     <div className="app-container">
-      {/* Particles Background */}
       <ParticleBackground />
-
-      {/* Conditionally render the loader */}
       {loading ? <PageLoader /> : (
         <div className={`content ${fadeIn ? 'fade-in' : ''}`}>
-          {/* Render Header, Headline, and SearchBar after loading */}
           <Header />
           <Headline />
           <SearchBar onSearch={handleSearch} />
-          
-          {/* Render SearchResults - make sure it's visible */}
           <div className="search-results-wrapper">
-            <SearchResults 
-              quote={searchResult} 
-              loading={searchLoading} 
+            <SearchResults
+              result={searchResult}  // Pass the full parsed result object
+              loading={searchLoading}
               error={searchError}
               hasSearched={hasSearched}
             />
@@ -100,3 +99,4 @@ const App = () => {
 };
 
 export default App;
+
