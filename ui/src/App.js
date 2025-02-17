@@ -2,7 +2,8 @@ import { useState, useEffect } from "react";
 import PageLoader from './PageLoader';  // Import the Loader component
 import './App.css';
 import SearchBar from './SearchBar';  // Import the SearchBar component
-import Header from './Header';
+import Headline from './Headline';
+import Header from './Header'
 import ParticleBackground from './ParticleBackground';  // Import the ParticleBackground component
 
 const App = () => {
@@ -30,7 +31,8 @@ const App = () => {
       {/* Add the custom search bar and header after loading */}
       {!loading && (
         <div className={`App-content ${fadeIn ? 'fade-in' : ''}`}>
-          <Header />
+					<Header />
+          <Headline />
           <SearchBar />  {/* Display the search bar */}
         </div>
       )}

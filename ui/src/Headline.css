@@ -1,0 +1,32 @@
+/* Ensure the header takes up the full width and centers the content */
+.headline {
+  width: 100%; /* Full width */
+  font-size: 1.5rem;
+  margin-bottom: 0px;
+  letter-spacing: 1px;
+  color: #FFFFF4;
+  display: flex;  /* Use flexbox */
+  justify-content: center;  /* Center content horizontally */
+  align-items: center;  /* Center content vertically */
+  text-align: center;  /* Ensure text is centered */
+}
+
+.headline-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.title {
+  margin: 0;
+}
+
+.slogan {
+  font-size: 1rem;
+  letter-spacing: 1px;
+  color: #FFFFF4;
+  opacity: 0.6;
+  margin-top: 10px;  /* Add some space between title and slogan */
+}
+

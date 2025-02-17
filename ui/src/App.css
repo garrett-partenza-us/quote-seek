@@ -42,7 +42,7 @@
   opacity: 1;  /* Gradually fade in after loading */
 }
 
-header,
+headline,
 .search-bar {
   opacity: 0;
   animation: fadeIn 1.5s forwards;

@@ -1,32 +1,27 @@
-/* Ensure the header takes up the full width and centers the content */
 .header {
-  width: 100%; /* Full width */
-  font-size: 1.5rem;
-  margin-bottom: 0px;
-  letter-spacing: 1px;
-  color: #FFFFF4;
-  display: flex;  /* Use flexbox */
-  justify-content: center;  /* Center content horizontally */
-  align-items: center;  /* Center content vertically */
-  text-align: center;  /* Ensure text is centered */
+  background-color: transparent;
+  display: flex;
+  justify-content: flex-end;  /* Align the content to the right */
+  align-items: center;
+  padding: 15px 25px;
+  position: fixed;
+  top: 0;
+  right: 0;  /* Ensure it sticks to the right */
+  width: 100vw;  /* Full width of the viewport */
+  z-index: 1000;
 }
 
-.header-content {
+.header-logo-container {
   display: flex;
-  flex-direction: column;
-  justify-content: center;
   align-items: center;
 }
 
-.title {
-  margin: 0;
+.github-logo {
+  font-size: 30px;
+  color: #333;
+  transition: color 0.3s ease;
 }
 
-.slogan {
-  font-size: 1rem;
-  letter-spacing: 1px;
-  color: #FFFFF4;
-  opacity: 0.6;
-  margin-top: 10px;  /* Add some space between title and slogan */
+.github-logo:hover {
+  color: #4078c0;  /* GitHub blue */
 }
-
