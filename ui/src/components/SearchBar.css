@@ -2,8 +2,10 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  align-items: center;
+	padding-top: 20px;
+	padding-bottom: 20px;
   height: 100%;
-  width: 800px; /* Ensure the container takes up the full width */
 }
 
 .search-bar {
@@ -11,7 +13,7 @@
   border: 1px solid #FFFFF4;  /* White outline */
   color: #FFFFF2;  /* White text */
   font-size: 1rem;  /* Larger font size */
-  padding: 15px 20px;
+  padding: 15px 25px;
   width: 80%;  /* Increase to 80% of container width */
   max-width: 1200px;  /* Optional: add max-width for responsiveness */
   border-radius: 25px;  /* Rounded corners */

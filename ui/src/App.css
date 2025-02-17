@@ -1,51 +1,49 @@
-/* src/App.css */
-.App {
+/* App.css */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Roboto', sans-serif;  /* Apply Roboto font globally */
+}
+
+.app-container {
   height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
   flex-direction: column;
   position: relative;
-  overflow: hidden;
+  overflow-y: 'scroll';
 }
 
-/*
-.App-content {
-  z-index: 3; 
-  text-align: center;
-}
-*/
-
-.App-link {
-  color: #61dafb;
-  font-size: 1.5rem;
-  text-decoration: none;
-}
-
-.App-header {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-}
-
-* {
-  font-family: 'Roboto', sans-serif;  /* Apply Roboto font globally */
-}
-
-.App-content {
+.content {
   opacity: 0;
   transition: opacity 1s ease-in-out;
+  z-index: 2;
+  text-align: center;
+	display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
-.App-content.fade-in {
+.content.fade-in {
   opacity: 1;  /* Gradually fade in after loading */
 }
 
-headline,
-.search-bar {
-  opacity: 0;
-  animation: fadeIn 1.5s forwards;
+.content > * {
+  margin: 1rem 0;
+}
+
+/* Header, SearchBar, and Headline styles can be added in their respective components */
+
+/* Particle Background should be fixed to cover the entire screen */
+.particle-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
 }
 
 @keyframes fadeIn {

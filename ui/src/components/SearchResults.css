@@ -1,0 +1,22 @@
+/* Add these to your SearchResults.css file */
+
+/* Fix 1: Ensure proper z-index and positioning */
+.search-results-container {
+	width: 100%;
+  z-index: 100; /* Higher than the particle background */
+	padding-top: 20px;
+	display: flex;
+  justify-content: center;
+  align-items: center;
+	padding-left: 100px;
+	padding-right: 100px;
+}
+
+/* Fix 2: Ensure text color has sufficient contrast */
+.search-results-text {
+  color: white !important; /* Force white color */
+	display: flex;
+  justify-content: center;
+  align-items: center;
+	white-space: pre-line;
+}
