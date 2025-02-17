@@ -9,10 +9,12 @@
   overflow: hidden;
 }
 
+/*
 .App-content {
-  z-index: 3;  /* Ensure content appears above particles */
+  z-index: 3; 
   text-align: center;
 }
+*/
 
 .App-link {
   color: #61dafb;
@@ -29,5 +31,31 @@
 
 * {
   font-family: 'Roboto', sans-serif;  /* Apply Roboto font globally */
+}
+
+.App-content {
+  opacity: 0;
+  transition: opacity 1s ease-in-out;
+}
+
+.App-content.fade-in {
+  opacity: 1;  /* Gradually fade in after loading */
+}
+
+header,
+.search-bar {
+  opacity: 0;
+  animation: fadeIn 1.5s forwards;
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
