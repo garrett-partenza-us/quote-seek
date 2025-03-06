@@ -2,5 +2,5 @@ model/fine_tuned*
 model/word2vec*
 model/env
 **/__pycache__
-api/fasttext/*
-ui/node_modules
+backend/fasttext/*
+frontend/node_modules
