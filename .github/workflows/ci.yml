@@ -29,14 +29,14 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      # Build and push backend image
+      # Build and push backend image for multiple platforms (amd64 and arm64)
       - name: Build and push backend Docker image
         run: |
-          docker build -f Dockerfile.backend -t ghcr.io/${{ github.repository }}/backend:latest .
-          docker push ghcr.io/${{ github.repository }}/backend:latest
+          docker buildx build --platform linux/amd64,linux/arm64 -f Dockerfile.backend -t ghcr.io/${{ github.repository }}/backend:latest --push .
 
-      # Build and push frontend image
+      # Build and push frontend image for multiple platforms (amd64 and arm64)
       - name: Build and push frontend Docker image
         run: |
-          docker build -f Dockerfile.frontend -t ghcr.io/${{ github.repository }}/frontend:latest .
-          docker push ghcr.io/${{ github.repository }}/frontend:latest
+          docker buildx build --platform linux/amd64,linux/arm64 -f Dockerfile.frontend -t ghcr.io/${{ github.repository }}/frontend:latest --push .
+
+
