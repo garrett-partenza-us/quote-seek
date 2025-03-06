@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -14,6 +13,7 @@ type SearchHandler struct {
 	Meditations *Meditations
 	Normalizer  Normalizer
 	Vectorizer  Vectorizer
+	ChatGPT     ChatGPT
 }
 
 type Request struct {
@@ -31,7 +31,6 @@ func enableCors(w *http.ResponseWriter, r *http.Request) {
 		return
 	}
 }
-
 
 func (h SearchHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	enableCors(&w, r)
@@ -57,94 +56,29 @@ func (h SearchHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	queryVector := h.Vectorizer.Vectorize(cleanedText)
 	searchResults := h.Meditations.Search(queryVector)
 
-	userPrompt := GeneratePrompt(data.Query, searchResults, h.Config.Preface)
+	userPrompt := GeneratePrompt(data.Query, searchResults)
 
-	// Prepare the JSON payload to send to the Ollama API
-		payload := map[string]interface{}{
-			"model": "llama3:instruct",
-			"messages": []map[string]interface{}{
-					{
-							"role":    "system",
-							"content": h.Config.SystemPrompt,
-					},
-					{
-							"role":    "user",
-							"content": userPrompt,
-					},
-			},
-			"stream": false,
-			"format": map[string]interface{}{ // Explicitly define as map[string]interface{}
-					"type": "object",
-					"properties": map[string]interface{}{
-							"quote": map[string]interface{}{
-									"type": "string",
-							},
-							"interpretation": map[string]interface{}{
-									"type": "string",
-							},
-							"advice": map[string]interface{}{
-									"type": "string",
-							},
-					},
-					"required": []string{"quote", "interpretation", "advice"},
-			},
+	quote, interpretation, advice := h.ChatGPT.Query(userPrompt)
+
+	response := map[string]string{
+		"quote":          quote,
+		"interpretation": interpretation,
+		"advice":         advice,
 	}
 
-	ollamaURL := "http://localhost:11434/api/chat"
-	jsonPayload, err := json.Marshal(payload)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	req, err := http.NewRequest("POST", ollamaURL, bytes.NewBuffer(jsonPayload))
-	if err != nil {
-		log.Fatal(err)
-	}
-	req.Header.Set("Content-Type", "application/json")
-
-	client := &http.Client{}
-	resp, err := client.Do(req)
-	if err != nil {
-		http.Error(w, "Failed to call Ollama API", http.StatusInternalServerError)
-		return
-	}
-	defer resp.Body.Close()
-
-	// Read response from Ollama
-	respBody, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		http.Error(w, "Failed to read response from Ollama", http.StatusInternalServerError)
-		return
-	}
-
-	var ollamaResponse map[string]interface{}
-	err = json.Unmarshal(respBody, &ollamaResponse)
-	if err != nil {
-		http.Error(w, "Failed to parse Ollama response", http.StatusInternalServerError)
-		return
-	}
-
-	// Ensure "message" and "content" keys exist before accessing them
-	message, ok := ollamaResponse["message"].(map[string]interface{})
-	if !ok {
-		http.Error(w, "Invalid response format: missing 'message' field", http.StatusInternalServerError)
-		return
-	}
-
-	content, ok := message["content"].(string)
-	if !ok {
-		http.Error(w, "Invalid response format: missing 'content' field", http.StatusInternalServerError)
-		return
-	}
-
-	// Send the generated text back to the original caller
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
 
-	encoder := json.NewEncoder(w)
-	response := map[string]string{"response": content}
-	encoder.Encode(response)
+	respJSON, err := json.Marshal(response)
+	if err != nil {
+		http.Error(w, "Failed to marshal response", http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	w.Write(respJSON)
+
 }
+
 func main() {
 	config := GetConfig()
 	meditations, err := NewMeditations(config.MeditationsCSVPath)
@@ -156,11 +90,20 @@ func main() {
 		256,
 		100000,
 	)
+	chatgpt := ChatGPT{
+		OpenAI_Environment:  config.OpenAI_Environment,
+		OpenAI_Model:        config.OpenAI_Model,
+		OpenAI_Key:          config.OpenAI_Key,
+		OpenAI_Endpoint:     config.OpenAI_Endpoint,
+		OpenAI_SystemPrompt: config.OpenAI_SystemPrompt,
+		OpenAI_MaxTokens:    config.OpenAI_MaxTokens,
+	}
 	handler := SearchHandler{
 		Config:      config,
 		Meditations: meditations,
 		Normalizer:  normalizer,
 		Vectorizer:  vectorizer,
+		ChatGPT:     chatgpt,
 	}
 	if err != nil {
 		log.Fatal(err)

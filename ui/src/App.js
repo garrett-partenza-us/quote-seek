@@ -51,18 +51,14 @@ const App = () => {
       const data = await response.json();
 
       // Check if the response contains the 'response' key with a stringified JSON
-      if (data && data.response) {
-				console.log(data.response)
-        // Parse the 'response' field, which contains the JSON string
-        const parsedResponse = JSON.parse(data.response);
-
-        console.log('Parsed search result:', parsedResponse);
+      if (data) {
+				console.log(data)
 
         // Set the parsed result to state
-        if (parsedResponse.quote && parsedResponse.interpretation && parsedResponse.advice) {
-          setSearchResult(parsedResponse); // Set the parsed result object
+        if (data.quote && data.interpretation && data.advice) {
+          setSearchResult(data); // Set the parsed result object
         } else {
-          console.warn('Unexpected response format:', parsedResponse);
+          console.warn('Unexpected response format:', data);
           setSearchResult(null);
         }
       } else {

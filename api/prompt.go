@@ -1,11 +1,11 @@
 package main
 
 import (
-	"strings"
 	"fmt"
+	"strings"
 )
 
-func GeneratePrompt(query string, searchResults []string, preface string) string {
+func GeneratePrompt(query string, searchResults []string) string {
 
 	// Construct query XML
 	queryXML := "<rag_query>" + query + "</rag_query>"
@@ -21,13 +21,11 @@ func GeneratePrompt(query string, searchResults []string, preface string) string
 
 	// Create user prompt
 	sb.Reset()
-	sb.WriteString("<user_prompt>")
-	sb.WriteString(preface)
+	sb.WriteString("<rag_task_content>")
 	sb.WriteString(queryXML)
 	sb.WriteString(searchResultsXML)
-	sb.WriteString("</user_prompt>")
+	sb.WriteString("</rag_task_content>")
 	userPrompt := sb.String()
-
 	return userPrompt
 
 }

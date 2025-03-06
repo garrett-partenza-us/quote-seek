@@ -11,8 +11,12 @@ type Config struct {
 	VocabPath string
 	VectorsPath string
 	NgramsPath string
-	SystemPrompt string
-	Preface string
+	OpenAI_Environment	string
+	OpenAI_Model				string
+	OpenAI_Key					string
+	OpenAI_Endpoint			string
+	OpenAI_SystemPrompt string
+	OpenAI_MaxTokens		int
 }
 
 func GetConfig() Config {
