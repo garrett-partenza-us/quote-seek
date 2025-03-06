@@ -1,0 +1,32 @@
+# Golang 2.10 base image
+FROM golang:1.20-alpine as builder
+
+# Set the Current Working Directory inside the container
+WORKDIR /app
+
+# Copy go.mod and go.sum to download all dependencies. Dependencies will be cached if the go.mod and go.sum files are not changed
+COPY backend/go.mod backend/go.sum ./
+
+# Download all dependencies. Dependencies will be cached if the go.mod and go.sum files are not changed
+RUN go mod tidy
+
+# Copy the entire backend directory contents into the container
+COPY backend/ .
+
+# Build the Go app
+RUN go build -o /go-api .
+
+# Start a new stage from a smaller image for running the app
+FROM alpine:latest  
+
+# Set the Current Working Directory inside the container for runtime
+WORKDIR /root/
+
+# Copy the pre-built binary from the builder stage
+COPY --from=builder /go-api .
+
+# Expose the port the app will run on
+EXPOSE 8080
+
+# Command to run the executable
+CMD ["./go-api"]
