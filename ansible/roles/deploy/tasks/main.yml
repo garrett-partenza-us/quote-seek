@@ -49,6 +49,8 @@
       openai_maxtokens: "{{ openai_maxtokens }}"
       openai_systemprompt: "{{ openai_systemprompt }}"
       openai_key: "{{ openai_key }}"
+      scale_path: "{{ scale_path }}"
+      mean_path: "{{ mean_path }}"
     published_ports:
       - "8080:8080" 
 

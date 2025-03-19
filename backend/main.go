@@ -58,7 +58,6 @@ func (h SearchHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	queryVector := h.Vectorizer.Vectorize(cleanedText)
 	scaledVector := h.StandardScaler.ScaleVector(queryVector)
 	searchResults := h.Meditations.Search(scaledVector)
-
 	userPrompt := GeneratePrompt(data.Query, searchResults)
 
 	quote, interpretation, advice := h.ChatGPT.Query(userPrompt)
@@ -84,6 +83,9 @@ func (h SearchHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	meditations, err := NewMeditations(os.Getenv("meditations_csv_path"))
+	if err != nil {
+		log.Fatal("Failed to load meditations: ", err)
+	}
 	normalizer := NewNormalizer(os.Getenv("stopwords_path"))
 	vectorizer := NewVectorizer(
 		os.Getenv("vocab_path"),

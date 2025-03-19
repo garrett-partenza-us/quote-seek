@@ -45,6 +45,8 @@ func ReadBinaryArrayFile1D(path string, cols int) []float64 {
 
 	// Check if the number of elements matches the expected 2D array size
 	if cols != len(floats) {
+		log.Print("Number of columns expected: ", cols)
+		log.Print("Number of columns recieved: ", len(floats))
 		log.Fatal("The dimensions of the array do not match the expected size.")
 	}
 
@@ -69,7 +71,7 @@ func NewStandardScaler(size int, pathMean, pathScale string) StandardScaler {
 }
 
 func (s *StandardScaler) ScaleVector(data []float64) []float64 {
-	var scaledData []float64
+	scaledData := make([]float64, len(data))
 	for col, val := range data {
 		scaledData[col] = (val - s.Mean[col]) / s.Scale[col]
 	}

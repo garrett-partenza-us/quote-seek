@@ -97,7 +97,7 @@ func (m *Meditations) Search (query []float64) []string {
 
 	// Retrieve texts from results
 	var results []string
-	for i := 0; i < 3; i++ {
+	for i := 0; i < 5; i++ {
 		results = append(results, m.Entries[indices[i]].Text)
 	}
 

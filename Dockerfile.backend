@@ -1,4 +1,4 @@
-# Use a more current Golang version
+#Use a more current Golang version
 FROM golang:1.23.3-alpine as builder
 # Set the Current Working Directory inside the container
 WORKDIR /app
