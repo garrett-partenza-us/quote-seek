@@ -1,6 +1,8 @@
 model/fine_tuned*
 model/word2vec*
 model/env
+model/*.bin.npy
+model/*.bin
 **/__pycache__
 backend/fasttext/*
 frontend/node_modules

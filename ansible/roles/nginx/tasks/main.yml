@@ -1,0 +1,33 @@
+- name: Install Nginx
+  become: true
+  apt:
+    name: nginx
+    state: present
+
+- name: Configure Nginx reverse proxy
+  become: true
+  template:
+    src: "{{ role_path }}/templates/reverse_proxy.conf.j2"
+    dest: /etc/nginx/sites-available/quoteseek
+
+- name: Test Nginx configuration
+  become: true
+  command: nginx -t
+  register: nginx_test
+  failed_when: nginx_test.rc != 0  # Ensure task fails if configuration is invalid
+
+- name: Enable Nginx site configuration
+  become: true
+  file:
+    src: /etc/nginx/sites-available/quoteseek
+    dest: /etc/nginx/sites-enabled/quoteseek
+    state: link
+  when: nginx_test.rc == 0
+
+- name: Start and enable Nginx service
+  become: true
+  service:
+    name: nginx
+    state: reloaded
+    enabled: yes
+

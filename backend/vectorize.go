@@ -31,7 +31,7 @@ func LoadVocab(path string) map[string]int {
 	return vocab
 }
 
-func ReadBinaryArrayFile(path string, rows int, cols int) [][]float64 {
+func ReadBinaryArrayFile2D(path string, rows int, cols int) [][]float64 {
 
 	// Read the binary array file
 	file, err := os.Open(path)
@@ -84,8 +84,8 @@ func ReadBinaryArrayFile(path string, rows int, cols int) [][]float64 {
 func NewVectorizer(vocabPath string, vectorsPath string, ngramsPath string, size int, bucket int) Vectorizer {
 
 	vocab := LoadVocab(vocabPath)
-	vectors := ReadBinaryArrayFile(vectorsPath, len(vocab), size)
-	ngrams := ReadBinaryArrayFile(ngramsPath, bucket, size)
+	vectors := ReadBinaryArrayFile2D(vectorsPath, len(vocab), size)
+	ngrams := ReadBinaryArrayFile2D(ngramsPath, bucket, size)
 
 	return Vectorizer{
 		Vocab:   vocab,

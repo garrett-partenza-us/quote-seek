@@ -1,0 +1,70 @@
+- name: Include vars
+  include_vars: main.yml
+
+- name: Authenticate Docker with GitHub Container Registry
+  docker_login:
+    username: "{{ github_username }}"
+    password: "{{ github_pat }}"
+    registry: ghcr.io
+  no_log: false
+
+- name: Pull the frontend Docker image from GHCR
+  docker_image:
+    source: pull
+    name: ghcr.io/{{ github_username }}/{{ github_repo }}/{{ frontend_image }}:{{ image_tag }}
+
+- name: Pull the backend Docker image from GHCR
+  docker_image:
+    source: pull
+    name: ghcr.io/{{ github_username }}/{{ github_repo }}/{{ backend_image }}:{{ image_tag }}
+
+- name: Run the frontend Docker container
+  docker_container:
+    name: frontend_container
+    image: ghcr.io/{{ github_username }}/{{ github_repo }}/{{ frontend_image }}:{{ image_tag }}
+    pull: always
+    recreate: yes
+    state: started
+    restart_policy: always
+    published_ports:
+      - "3000:80" 
+
+- name: Run the backend Docker container
+  docker_container:
+    name: backend_container
+    image: ghcr.io/{{ github_username }}/{{ github_repo }}/{{ backend_image }}:{{ image_tag }}
+    pull: always
+    recreate: yes
+    state: started
+    restart_policy: always
+    env:
+      meditations_csv_path: "{{ meditations_csv_path }}"
+      stopwords_path: "{{ stopwords_path }}"
+      vocab_path: "{{ vocab_path }}"
+      vectors_path: "{{ vectors_path }}"
+      ngrams_path: "{{ ngrams_path }}"
+      openai_environment: "{{ openai_environment }}"
+      openai_model: "{{ openai_model }}"
+      openai_endpoint: "{{ openai_endpoint }}"
+      openai_maxtokens: "{{ openai_maxtokens }}"
+      openai_systemprompt: "{{ openai_systemprompt }}"
+      openai_key: "{{ openai_key }}"
+    published_ports:
+      - "8080:8080" 
+
+- name: Copy frontend files from Docker container to Nginx web root
+  become: true
+  shell: docker cp frontend_container:/usr/share/nginx/html/. /var/www/html/
+  args:
+    executable: /bin/bash
+  register: copy_result
+  changed_when: copy_result.rc == 0
+
+- name: Set proper ownership and permissions for web files
+  become: true
+  file:
+    path: /var/www/html
+    owner: www-data
+    group: www-data
+    mode: '0755'
+    recurse: yes

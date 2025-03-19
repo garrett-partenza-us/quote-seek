@@ -1,0 +1,21 @@
+# Images
+github_repo: "quote-seek"
+frontend_image: "frontend"
+backend_image: "backend"
+image_tag: "latest"
+
+# Backend configurations
+meditations_csv_path: "meditations.csv"
+stopwords_path: "/root/stopwords-en.txt"
+vocab_path: "./fasttext/vocab.json"
+vectors_path: "./fasttext/vectors.bin"
+ngrams_path: "./fasttext/ngrams.bin"
+mean_path: "./scaler/mean.bin.npy"
+scale_path: "./scaler/scale.bin.npy"
+
+# OpenAI Configurations
+openai_environment: "development"
+openai_model: "gpt-4o-mini"
+openai_endpoint: "https://api.openai.com/v1/chat/completions"
+openai_maxtokens: "800"
+openai_systemprompt: ""

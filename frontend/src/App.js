@@ -30,7 +30,7 @@ const App = () => {
     setHasSearched(true);
 
     try {
-      const apiUrl = `${window.location.protocol}//${window.location.hostname}:8080/search`;
+      const apiUrl = `${window.location.protocol}//${window.location.hostname}/api/search`;
       console.log('Sending search request:', query);
 
       const response = await fetch(apiUrl, {

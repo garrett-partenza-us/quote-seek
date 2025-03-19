@@ -1,0 +1,14 @@
+---
+- name: Pull images from GHCR and start with docker
+  hosts: raspberry-pi
+  become: true
+  vars_files:
+    - ../vaults/pi.yml
+    - ../vaults/github.yml
+    - ../vaults/openai.yml
+  vars:
+    ansible_user: "{{ pi_user }}"
+    ansible_ssh_pass: "{{ pi_pass }}"
+    ansible_become_pass: "{{ pi_pass }}"
+  roles:
+    - deploy

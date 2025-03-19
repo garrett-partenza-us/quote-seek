@@ -1,32 +1,30 @@
-# Golang 2.10 base image
+# Use a more current Golang version
 FROM golang:1.23.3-alpine as builder
-
 # Set the Current Working Directory inside the container
 WORKDIR /app
-
-# Copy go.mod and go.sum to download all dependencies. Dependencies will be cached if the go.mod and go.sum files are not changed
+# Copy go.mod and go.sum to download all dependencies
 COPY backend/go.mod backend/go.sum ./
-
-# Download all dependencies. Dependencies will be cached if the go.mod and go.sum files are not changed
+# Download all dependencies
 RUN go mod tidy
-
 # Copy the entire backend directory contents into the container
 COPY backend/ .
-
 # Build the Go app
-RUN go build -o /go-api .
+RUN CGO_ENABLED=0 GOOS=linux go build -o /go-api .
 
 # Start a new stage from a smaller image for running the app
-FROM alpine:latest  
-
+FROM alpine:latest
+# Add ca-certificates for HTTPS requests and timezone data
+RUN apk --no-cache add ca-certificates tzdata
 # Set the Current Working Directory inside the container for runtime
 WORKDIR /root/
-
 # Copy the pre-built binary from the builder stage
 COPY --from=builder /go-api .
+# Copy the needed files to the data directory
+COPY model/meditations.csv /root/meditations.csv
+COPY backend/stopwords-en.txt /root/stopwords-en.txt
+COPY backend/fasttext /root/fasttext
 
 # Expose the port the app will run on
 EXPOSE 8080
-
 # Command to run the executable
 CMD ["./go-api"]

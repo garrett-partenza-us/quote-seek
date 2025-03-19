@@ -6,14 +6,16 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
+	"strconv"
 )
 
 type SearchHandler struct {
-	Config      Config
-	Meditations *Meditations
-	Normalizer  Normalizer
-	Vectorizer  Vectorizer
-	ChatGPT     ChatGPT
+	Meditations					*Meditations
+	Normalizer					Normalizer
+	Vectorizer					Vectorizer
+	StandardScaler			StandardScaler
+	ChatGPT							ChatGPT
 }
 
 type Request struct {
@@ -54,7 +56,8 @@ func (h SearchHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	cleanedText := h.Normalizer.Normalize(data.Query)
 	queryVector := h.Vectorizer.Vectorize(cleanedText)
-	searchResults := h.Meditations.Search(queryVector)
+	scaledVector := h.StandardScaler.ScaleVector(queryVector)
+	searchResults := h.Meditations.Search(scaledVector)
 
 	userPrompt := GeneratePrompt(data.Query, searchResults)
 
@@ -80,30 +83,41 @@ func (h SearchHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	config := GetConfig()
-	meditations, err := NewMeditations(config.MeditationsCSVPath)
-	normalizer := NewNormalizer(config.StopwordsPath)
+	meditations, err := NewMeditations(os.Getenv("meditations_csv_path"))
+	normalizer := NewNormalizer(os.Getenv("stopwords_path"))
 	vectorizer := NewVectorizer(
-		config.VocabPath,
-		config.VectorsPath,
-		config.NgramsPath,
+		os.Getenv("vocab_path"),
+		os.Getenv("vectors_path"),
+		os.Getenv("ngrams_path"),
 		256,
 		100000,
 	)
+
+	scaler := NewStandardScaler(
+		256,
+		os.Getenv("mean_path"),
+		os.Getenv("scale_path"),
+	)
+
+	maxTokens, err := strconv.Atoi(os.Getenv("openai_maxtokens")) // TODO: Refactor this later
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	chatgpt := ChatGPT{
-		OpenAI_Environment:  config.OpenAI_Environment,
-		OpenAI_Model:        config.OpenAI_Model,
-		OpenAI_Key:          config.OpenAI_Key,
-		OpenAI_Endpoint:     config.OpenAI_Endpoint,
-		OpenAI_SystemPrompt: config.OpenAI_SystemPrompt,
-		OpenAI_MaxTokens:    config.OpenAI_MaxTokens,
+		OpenAI_Environment:  os.Getenv("openai_environment"),
+		OpenAI_Model:        os.Getenv("openai_model"),
+		OpenAI_Key:          os.Getenv("openai_key"),
+		OpenAI_Endpoint:     os.Getenv("openai_endpoint"),
+		OpenAI_SystemPrompt: os.Getenv("openai_systemprompt"),
+		OpenAI_MaxTokens:    maxTokens,
 	}
 	handler := SearchHandler{
-		Config:      config,
-		Meditations: meditations,
-		Normalizer:  normalizer,
-		Vectorizer:  vectorizer,
-		ChatGPT:     chatgpt,
+		Meditations:			meditations,
+		Normalizer:				normalizer,
+		Vectorizer:				vectorizer,
+		ChatGPT:					chatgpt,
+		StandardScaler:		scaler,
 	}
 	if err != nil {
 		log.Fatal(err)

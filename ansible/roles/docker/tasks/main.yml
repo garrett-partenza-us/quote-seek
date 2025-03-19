@@ -1,0 +1,36 @@
+- name: Update apt cache
+  apt:
+    update_cache: yes
+    cache_valid_time: 3600
+
+- name: Install prerequisites for Docker
+  apt:
+    name:
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - gnupg
+      - lsb-release
+      - python3-pip
+    state: present
+
+- name: Get docker convenience script
+  shell: curl -fsSL https://get.docker.com -o /tmp/get-docker.sh
+  args:
+    creates: /tmp/get-docker.sh
+
+- name: Install docker
+  shell: sh /tmp/get-docker.sh
+  args:
+    creates: /usr/bin/docker
+  notify: Restart Docker
+
+
+- name: Make pi user execute docker commands
+  shell: "usermod -aG docker {{ ansible_user }}"
+
+- name: Install docker-compose
+  apt:
+    name:
+      - docker-compose
+    state: present
