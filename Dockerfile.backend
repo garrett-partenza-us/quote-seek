@@ -23,6 +23,7 @@ COPY --from=builder /go-api .
 COPY model/meditations.csv /root/meditations.csv
 COPY backend/stopwords-en.txt /root/stopwords-en.txt
 COPY backend/fasttext /root/fasttext
+COPY backend/scaler /root/scaler
 
 # Expose the port the app will run on
 EXPOSE 8080
