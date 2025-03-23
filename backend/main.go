@@ -54,9 +54,13 @@ func (h SearchHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	cleanedText := h.Normalizer.Normalize(data.Query)
-	queryVector := h.Vectorizer.Vectorize(cleanedText)
-	scaledVector := h.StandardScaler.ScaleVector(queryVector)
+	//cleanedText := h.Normalizer.Normalize(data.Query)
+	//queryVector := h.Vectorizer.Vectorize(cleanedText)
+	//scaledVector := h.StandardScaler.ScaleVector(queryVector)
+	scaledVector, err := getEmbedding(data.Query)
+	if err != nil {
+		log.Fatal(err)
+	}
 	searchResults := h.Meditations.Search(scaledVector)
 	userPrompt := GeneratePrompt(data.Query, searchResults)
 

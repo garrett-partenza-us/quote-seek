@@ -6,6 +6,9 @@ import (
 	"encoding/json"
 	"log"
 	"os"
+	"io/ioutil"
+	"net/http"
+	"fmt"
 )
 
 type Vectorizer struct {
@@ -171,4 +174,76 @@ func (v *Vectorizer) Vectorize(tokens []string) []float64 {
 		result = addSlices(result, vector)
 	}
 	return averageSlice(result, len(vectors))
+}
+
+type EmbeddingRequest struct {
+	Input string `json:"input"`
+	Model string `json:"model"`
+}
+
+type EmbeddingResponse struct {
+	Object string `json:"object"`
+	Data   []struct {
+		Object   string    `json:"object"`
+		Index    int       `json:"index"`
+		Embedding []float64 `json:"embedding"`
+	} `json:"data"`
+	Model string `json:"model"`
+	Usage struct {
+		PromptTokens  int `json:"prompt_tokens"`
+		TotalTokens   int `json:"total_tokens"`
+	} `json:"usage"`
+}
+
+func getEmbedding(text string) ([]float64, error) {
+
+	apiKey := os.Getenv("openai_key")
+	if apiKey == "" {
+		return nil, fmt.Errorf("API key is missing")
+	}
+
+	url := "https://api.openai.com/v1/embeddings"
+
+	embeddingRequest := EmbeddingRequest{
+		Input: text,
+		Model: "text-embedding-3-small",
+	}
+	requestBody, err := json.Marshal(embeddingRequest)
+	if err != nil {
+		return nil, fmt.Errorf("error marshaling request body: %v", err)
+	}
+
+	req, err := http.NewRequest("POST", url, bytes.NewBuffer(requestBody))
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Authorization", "Bearer "+apiKey)
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error making API request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	respBody, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("error reading response body: %v", err)
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("API request failed with status code %d: %s", resp.StatusCode, string(respBody))
+	}
+
+	var embeddingResponse EmbeddingResponse
+	if err := json.Unmarshal(respBody, &embeddingResponse); err != nil {
+		return nil, fmt.Errorf("error unmarshaling response: %v", err)
+	}
+
+	if len(embeddingResponse.Data) > 0 {
+		return embeddingResponse.Data[0].Embedding, nil
+	}
+	return nil, fmt.Errorf("no embedding data returned")
 }

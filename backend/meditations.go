@@ -50,10 +50,11 @@ func NewMeditations(path string) (*Meditations, error) {
 		// record[1] is the chunk (text)
 		// record[2] is the vector (embeddings)
 
-		text := record[1]
+		text := record[0]
 
 		// Split the vector string (remove the brackets and split by spaces)
-		vectorStr := strings.Trim(record[2], "[]")
+		vectorStr := strings.Trim(record[1], "[]")
+		vectorStr = strings.ReplaceAll(vectorStr, ",", "") // Remove commas
 		vectorParts := strings.Fields(vectorStr)
 
 		// Convert vector parts to float64
