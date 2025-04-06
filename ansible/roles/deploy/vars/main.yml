@@ -19,3 +19,5 @@ openai_model: "gpt-4o-mini"
 openai_endpoint: "https://api.openai.com/v1/chat/completions"
 openai_maxtokens: "800"
 openai_systemprompt: "You are a RAG search assistant wise in the teachings of Meditations by Marcus Aurelius. You task is the following: Given the users original search query and a set of quotes found in Meditations, choose the most relevant quote and offer interpretation and advice for the user. Make sure to structure your response in JSON format with the desired quote, interpretation and advice keys. Limit your responses for each section between 3-6 sentences."
+
+db_path: "/opt/db/feedback.db"

@@ -1,0 +1,79 @@
+---
+# SQLite database setup tasks
+# Path: roles/sqlite_setup/tasks/main.yml
+
+- name: Include vars
+  include_vars: main.yml
+
+- name: Install SQLite and Go SQLite driver dependencies
+  apt:
+    name: 
+      - sqlite3
+      - libsqlite3-dev
+    state: present
+    update_cache: yes
+  become: yes
+  
+- name: Check if database directory exists
+  stat:
+    path: "{{ db_dir }}"
+  register: db_dir_stat
+  
+- name: Ensure database directory exists
+  file:
+    path: "{{ db_dir }}"
+    state: directory
+    owner: "{{ app_user }}"
+    group: "{{ app_user }}"
+    mode: '0755'
+  become: yes
+  when: not db_dir_stat.stat.exists
+    
+- name: Check if database file exists
+  stat:
+    path: "{{ db_file }}"
+  register: db_file_stat
+  
+- name: Create SQLite database and initialize tables
+  block:
+    - name: Copy SQL initialization file
+      copy:
+        content: |
+          -- Create the feedback table
+          CREATE TABLE IF NOT EXISTS feedback (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL,
+            consistent TEXT NOT NULL,
+            helpful TEXT NOT NULL,
+            submitted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+          );
+          
+          -- Create index for better performance
+          CREATE INDEX IF NOT EXISTS idx_feedback_date ON feedback(submitted_at);
+        dest: "{{ db_dir }}/init.sql"
+        owner: "{{ app_user }}"
+        group: "{{ app_user }}"
+        mode: '0644'
+      become: yes
+      
+    - name: Initialize database with tables
+      become: yes
+      become_user: "{{ app_user }}"
+      shell: "sqlite3 {{ db_file }} < {{ db_dir }}/init.sql"
+  when: not db_file_stat.stat.exists
+
+- name: Set correct permissions for database file
+  file:
+    path: "{{ db_file }}"
+    owner: "{{ app_user }}"
+    group: "{{ app_user }}"
+    mode: '0644'
+  become: yes
+  when: db_file_stat.stat.exists
+  
+- name: Clean up initialization SQL file
+  file:
+    path: "{{ db_dir }}/init.sql"
+    state: absent
+  become: yes
+  when: not db_file_stat.stat.exists

@@ -6,7 +6,7 @@ const Headline = () => {
     <headline className="headline">
       <div className="headline-content">
         <h1 className="title">Meditations Quote Finder</h1>
-        <p className="slogan">Explore the right words, no matter where you start.</p>
+        <p className="slogan">An AI search tool for exploring quotes in Marcus Aurelius's journal of Meditations.</p>
       </div>
     </headline>
   );

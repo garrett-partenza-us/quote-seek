@@ -20,7 +20,6 @@ const App = () => {
       setLoading(false);
       setFadeIn(true);
     }, 3000);
-
     return () => clearTimeout(timer);
   }, []);
 
@@ -28,32 +27,31 @@ const App = () => {
     setSearchLoading(true);
     setSearchError(null);
     setHasSearched(true);
-
+    
     try {
       const apiUrl = `${window.location.protocol}//${window.location.hostname}/api/search`;
       console.log('Sending search request:', query);
-
+      
       const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-					query
-				})
+          query
+        })
       });
-
+      
       if (!response.ok) {
         throw new Error(`Search failed: ${response.statusText}`);
       }
-
+      
       // Get the response as JSON
       const data = await response.json();
-
-      // Check if the response contains the 'response' key with a stringified JSON
+      
+      // Check if the response contains the expected data
       if (data) {
-				console.log(data)
-
+        console.log(data)
         // Set the parsed result to state
         if (data.quote && data.interpretation && data.advice) {
           setSearchResult(data); // Set the parsed result object
@@ -62,7 +60,7 @@ const App = () => {
           setSearchResult(null);
         }
       } else {
-        console.warn('Response does not contain the expected "response" key');
+        console.warn('Response does not contain the expected data');
         setSearchResult(null);
       }
     } catch (error) {
@@ -97,4 +95,3 @@ const App = () => {
 };
 
 export default App;
-

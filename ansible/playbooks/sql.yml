@@ -1,0 +1,12 @@
+---
+- name: Start SQL 
+  hosts: raspberry-pi
+  become: true
+  vars_files:
+    - ../vaults/pi.yml
+  vars:
+    ansible_user: "{{ pi_user }}"
+    ansible_ssh_pass: "{{ pi_pass }}"
+    ansible_become_pass: "{{ pi_pass }}"
+  roles:
+    - sql

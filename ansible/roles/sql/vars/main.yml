@@ -1,0 +1,16 @@
+---
+# SQLite database setup variables
+# Path: roles/sqlite_setup/vars/main.yml
+
+# Directory for the database
+app_user: "ansible_user"
+db_dir: "/opt/db"
+
+# Full path to the database file
+db_file: "{{ db_dir }}/feedback.db"
+
+# Database name (used in Go configuration)
+db_name: "feedback.db"
+
+# Table name
+table_name: "feedback"

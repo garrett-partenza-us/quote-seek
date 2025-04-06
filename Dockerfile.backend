@@ -1,31 +1,48 @@
-#Use a more current Golang version
+# Use a more current Golang version
 FROM golang:1.23.3-alpine as builder
+
+# Install build dependencies for CGO and SQLite
+RUN apk --no-cache add gcc musl-dev sqlite-dev
+
 # Set the Current Working Directory inside the container
 WORKDIR /app
+
 # Copy go.mod and go.sum to download all dependencies
 COPY backend/go.mod backend/go.sum ./
+
 # Download all dependencies
 RUN go mod tidy
+
 # Copy the entire backend directory contents into the container
 COPY backend/ .
-# Build the Go app
-RUN CGO_ENABLED=0 GOOS=linux go build -o /go-api .
+
+# Build the Go app with CGO enabled
+RUN CGO_ENABLED=1 GOOS=linux go build -o /go-api .
 
 # Start a new stage from a smaller image for running the app
 FROM alpine:latest
-# Add ca-certificates for HTTPS requests and timezone data
-RUN apk --no-cache add ca-certificates tzdata
+
+# Add ca-certificates for HTTPS requests, timezone data, and SQLite runtime
+RUN apk --no-cache add ca-certificates tzdata sqlite
+
 # Set the Current Working Directory inside the container for runtime
 WORKDIR /root/
+
 # Copy the pre-built binary from the builder stage
 COPY --from=builder /go-api .
+
 # Copy the needed files to the data directory
 COPY model/meditations.csv /root/meditations.csv
 COPY backend/stopwords-en.txt /root/stopwords-en.txt
-COPY backend/fasttext /root/fasttext
-COPY backend/scaler /root/scaler
+
+# Create database directory
+RUN mkdir -p /root/db
 
 # Expose the port the app will run on
 EXPOSE 8080
+
+# Set environment variables
+ENV DB_PATH=/root/db/feedback.db
+
 # Command to run the executable
 CMD ["./go-api"]

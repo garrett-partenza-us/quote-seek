@@ -1,3 +1,4 @@
+/* components/Header.css */
 .header {
   background-color: transparent;
   display: flex;
@@ -9,6 +10,12 @@
   right: 0;  /* Ensure it sticks to the right */
   width: 100vw;  /* Full width of the viewport */
   z-index: 1000;
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+  gap: 20px;
 }
 
 .header-logo-container {
@@ -24,4 +31,47 @@
 
 .github-logo:hover {
   color: #4078c0;  /* GitHub blue */
+}
+
+.feedback-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(51, 51, 51, 0.1);
+  border: 1px solid rgba(51, 51, 51, 0.2);
+  border-radius: 4px;
+  padding: 8px 16px;
+  color: #333;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 14px;
+}
+
+.feedback-button:hover {
+  background: rgba(64, 120, 192, 0.1);
+  border-color: #4078c0;
+  color: #4078c0;
+}
+
+.feedback-icon {
+  font-size: 20px;
+}
+
+/* Media query for mobile devices */
+@media (max-width: 768px) {
+  .header {
+    padding: 10px 15px;
+  }
+  
+  .feedback-button {
+    padding: 6px 10px;
+  }
+  
+  .feedback-button span {
+    display: none;
+  }
+  
+  .github-logo {
+    font-size: 28px;
+  }
 }

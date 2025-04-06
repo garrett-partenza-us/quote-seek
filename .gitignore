@@ -1,6 +1,8 @@
 model/fine_tuned*
-.DS_Store
+settings.json
 model/.env
+.DS_Store
+model/.venv
 model/word2vec*
 model/env
 model/*.bin.npy
